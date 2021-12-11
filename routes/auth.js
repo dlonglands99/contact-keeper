@@ -4,6 +4,7 @@ const { check } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('config');
+const auth = require('../middleware/auth');
 
 const User = require('../models/User');
 const { validateRequest } = require('./utils');
@@ -11,8 +12,14 @@ const { validateRequest } = require('./utils');
 // @route   GET api/auth
 // @desc    Get logged in user
 // @access  Private
-router.get('/', (req, res) => {
-    res.send('Get currently logged in user.');
+router.get('/', auth, async (req, res) => {
+    // this only gets executed if the auth check passes
+    try {
+        const user = await User.findById(req.user.id).select('-password');
+        res.json(user);
+    } catch (err) {
+        res.status(500).send('Server error')
+    }
 });
 
 // @route   POST api/auth
@@ -23,6 +30,7 @@ router.post('/', [
     check('password', 'Password is required').exists()
 ], async (req, res) => {
 
+    validateRequest(req, res);
     const { email, password } = req.body;
 
     try {
