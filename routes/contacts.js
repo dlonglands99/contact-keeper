@@ -16,7 +16,7 @@ router.get("/", auth, async (req, res) => {
     });
     res.json(contacts);
   } catch (err) {
-    res.status(500).send("Server Error");
+    res.status(500).json({ msg: "Internal Server Error"} );
   }
 });
 
@@ -37,7 +37,7 @@ router.post(
       await contact.save();
       res.json(contact);
     } catch (err) {
-      res.status(500).send("Server error");
+      res.status(500).json({ msg: "Internal Server error" });
     }
   }
 );
@@ -74,7 +74,7 @@ router.put("/:id", auth, async (req, res) => {
 
     res.json(contact);
   } catch (err) {
-    res.status(500).send("Server error");
+    res.status(500).json({ msg: "Internal Server error" });
   }
 });
 
@@ -88,13 +88,13 @@ router.delete("/:id", auth, async (req, res) => {
     let contact = await Contact.findById(req.params.id);
 
     if (contact.userId.toString() !== userId) {
-      return res.status(401).send("Not authorized");
+      return res.status(401).json({ msg: "Not authorized" });
     }
 
     await Contact.findByIdAndRemove(req.params.id);
     res.json({ msg: "Contact Deleted" });
   } catch (err) {
-    res.status(500).send("Server error");
+    res.status(500).json({ msg: "Internal Server error" });
   }
 });
 
