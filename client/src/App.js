@@ -6,8 +6,8 @@ import AuthState from "./context/auth/AuthState";
 import Navbar from "./components/layout/Navbar";
 import Home from "./components/pages/Home";
 import About from "./components/pages/About";
-import Register from "./components/auth/Register";
-import Login from "./components/auth/Login";
+import Register from "./components/pages/auth/Register";
+import Login from "./components/pages/auth/Login";
 
 const App = () => {
   return (
