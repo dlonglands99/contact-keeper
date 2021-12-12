@@ -1,6 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
+import AlertContext from '../../../context/alert/alertContext';
+import AuthContext from '../../../context/auth/authContext';
 
 const Login = () => {
+    const authContext = useContext(AuthContext);
+    const alertContext = useContext(AlertContext);
+
+    const { loginUser, isAuthenticated, error, clearErrors } = authContext;
 
     const [user, setUser] = useState({
         email: "",
@@ -8,6 +15,19 @@ const Login = () => {
     });
 
     const { email, password } = user;
+    let navigate = useNavigate();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/');
+            clearErrors();
+        }
+
+        if (error === 'Invalid user credentials!') {
+            alertContext.setAlert(error, 'danger');
+        }
+        //eslint-disable-next-line
+    }, [error, isAuthenticated, navigate])
 
     const onChange = (e) => {
         setUser({ ...user, [e.target.name]: e.target.value });
@@ -15,7 +35,12 @@ const Login = () => {
 
     const onSubmit = (e) => {
         e.preventDefault();
-        console.log('User Logged In');
+
+        if (email === '' || password === '') {
+            alertContext.setAlert("All fields required", "danger");
+        } else {
+            loginUser({ email, password });
+        }
     }
     
     return (

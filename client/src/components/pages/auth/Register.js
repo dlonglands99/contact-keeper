@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AlertContext from '../../../context/alert/alertContext';
 import AuthContext from '../../../context/auth/authContext';
 
@@ -6,7 +7,7 @@ const Register = () => {
     const alertContext = useContext(AlertContext);
     const authContext = useContext(AuthContext);
 
-    const { registerUser, error, clearErrors } = authContext;
+    const { registerUser, error, clearErrors, isAuthenticated } = authContext;
 
     const [user, setUser] = useState({
         name: "",
@@ -17,12 +18,19 @@ const Register = () => {
 
     const { name, email, password, passwordConf } = user;
 
+    const navigate = useNavigate();
+
     useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/');
+        }
+
         if (error === 'User already exists') {
             alertContext.setAlert(error, "danger");
             clearErrors();
         }
-    }, [error])
+        // eslint-disable-next-line
+    }, [error, isAuthenticated, navigate])
 
     const onChange = (e) => {
         setUser({ ...user, [e.target.name]: e.target.value });
@@ -38,7 +46,7 @@ const Register = () => {
         } else if (password.length < 6) {
             alertContext.setAlert("Passwords must be at least 6 characters", "warning");
         } else {
-            authContext.registerUser({
+            registerUser({
                 name,
                 email,
                 password
